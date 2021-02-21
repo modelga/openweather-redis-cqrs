@@ -30,10 +30,10 @@ export class RedisRepository implements Repository {
   }
 
   async getWeatherCurrentAtLocation(locationSlug: string): Promise<Weather> {
-    return null;
+    return this.get(Prefix.WEATHER_CURRENT, locationSlug);
   }
   async getWeatherHistoryAtLocation(locationSlug: string, offset: number, limit: number): Promise<HistoryWeather[]> {
-    return [];
+    return this.lrange(Prefix.WEATHER_HISTORY, locationSlug, offset, limit);
   }
 
   async set(type: Prefix, key: string, data: any): Promise<void> {
@@ -42,7 +42,7 @@ export class RedisRepository implements Repository {
 
   async lrange<T>(type: Prefix, key: string, offset: number, limit: number): Promise<T[]> {
     const data = (await this.db.lrange(`${type}_${key}`, offset, limit)) as any[];
-    return data.map((data) => JSON.parse(data)) as T[];
+    return data?.map((data) => JSON.parse(data)) as T[];
   }
 
   async get<T>(type: Prefix, key: string): Promise<T> {
