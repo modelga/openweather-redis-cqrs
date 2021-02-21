@@ -2,14 +2,13 @@ import { Queue } from "./types";
 import { Config } from "../../config";
 import IoRedis from "ioredis";
 
-export class Redis implements Queue {
-  private db: IoRedis.Redis;
+export class RedisQueue implements Queue {
+  private queue: IoRedis.Redis;
   constructor(config: Config) {
-    this.db = new IoRedis(config.queue.host);
+    this.queue = new IoRedis(config.queue.host);
   }
   async forceUpdate(locationSlug: string): Promise<void> {
-    await this.db.publish("Update", locationSlug);
+    await this.queue.publish("Update", locationSlug);
     return;
   }
 }
-o;

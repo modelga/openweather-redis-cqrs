@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { WeatherService } from "../services/weather/index";
-import { asyncHandler, createResponse } from "../utils/handlers";
+import { SearchService } from "../services";
+import { asyncHandler, createResponse } from "../utils";
 
-export function searchController(service: WeatherService) {
+export function searchController(service: SearchService) {
   const router = Router({});
   router.get(
     "/:location",

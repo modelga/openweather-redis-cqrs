@@ -14,3 +14,10 @@ export type Location = {
   name: string;
   slug: string;
 };
+
+export type DetailedLocation = {
+  name: string;
+  lon: number;
+  lat: number;
+  country: string;
+};

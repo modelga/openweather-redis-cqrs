@@ -1,17 +1,19 @@
 import express from "express";
 import { Config } from "../config";
-import { factory as clientFactory } from "./client";
-import { factory as repositoryFactory } from "./repository";
+import { Client, factory as clientFactory } from "./client";
+import { factory as repositoryFactory, Repository } from "./repository";
+import { factory as queueFactory, Queue } from "./queue";
+
 import * as controllers from "./controllers";
-import { WeatherService } from "./services/weather/index";
+import { SearchService, TrackService } from "./services";
 
 export default function (config: Config) {
   const app = express();
-  const client = clientFactory(config);
-  const repository = repositoryFactory(config);
-  const weatherService = new WeatherService({ client, repository });
+
+  const { weatherService, trackService } = di(config);
 
   app.use("/search", controllers.searchController(weatherService));
+  app.use("/track", controllers.trackController(trackService));
 
   return {
     start() {
@@ -21,4 +23,15 @@ export default function (config: Config) {
       });
     },
   };
+}
+
+function di(config: Config) {
+  const client = clientFactory(config);
+  const queue = queueFactory(config);
+  const repository = repositoryFactory(config);
+
+  const weatherService = new SearchService({ client, repository });
+  const trackService = new TrackService({ client, repository });
+
+  return { weatherService, trackService };
 }

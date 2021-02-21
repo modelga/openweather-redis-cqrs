@@ -1,12 +1,12 @@
-import { Location, Weather, HistoryWeather } from "../models";
+import { Weather, HistoryWeather, DetailedLocation } from "../models";
 
 export enum DBTypes {
   Redis,
 }
 
 export interface Repository {
-  getLocationsToTrack(offset: number, limit: number): Promise<Location[]>;
-  addLocationToTrack(locationSlug: string): Promise<Location>;
+  getTrackedLocation(locationSlug: string): Promise<DetailedLocation>;
+  addLocationToTrack(locationSlug: string, detailedLocation: DetailedLocation): Promise<void>;
   deleteLocationToTrack(locationSlug: string): Promise<void>;
 
   getWeatherCurrentAtLocation(locationSlug: string): Promise<Weather>;

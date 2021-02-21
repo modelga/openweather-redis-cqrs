@@ -16,8 +16,26 @@ export default class OpenWeather implements Client {
     this.client = axios.create({ baseURL: config.client.host, params: { appid: config.client.token } });
   }
 
-  async queryForLocation(q: string): Promise<string> {
-    const response = await this.client.get<Geo1_0DirectResponse[]>("geo/1.0/direct", { params: { q } });
-    return response.data[0]?.name;
+  async queryForLocation(q: string) {
+    try {
+      const response = await this.client.get<Geo1_0DirectResponse[]>("geo/1.0/direct", { params: { q } });
+      return response.data[0]?.name;
+    } catch (err) {
+      return;
+    }
+  }
+
+  async getLocationDetails(location: string) {
+    const response = await this.client.get<Geo1_0DirectResponse[]>("geo/1.0/direct", { params: { q: location } });
+    if (!response.data[0]) {
+      throw new Error(`Not found location ${location}`);
+    }
+    const { country, lat, lon, name } = response.data[0];
+    return {
+      country,
+      lat,
+      lon,
+      name,
+    };
   }
 }
