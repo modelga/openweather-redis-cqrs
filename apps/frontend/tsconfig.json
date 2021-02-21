@@ -3,6 +3,8 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "target": "es5",
+    "lib": ["dom", "es2015","es2016","es6"]
   }
 }

@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDom from "react-dom";
-
-const App = () => <h1>Hello!</h1>;
+import App from "./App";
 
 ReactDom.render(<App />, document.getElementById("app"));
