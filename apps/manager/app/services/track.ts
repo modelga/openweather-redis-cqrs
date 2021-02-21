@@ -6,9 +6,9 @@ import { slugify } from "../utils/slugify";
 export class TrackService {
   constructor(private readonly deps: { repository: Repository; client: Client }) {}
 
-  async isTracked(locationSlug: string): Promise<Boolean> {
-    const isTracked = !!(await this.deps.repository.getTrackedLocation(locationSlug));
-    return isTracked;
+  async isTracked(slug: string): Promise<DetailedLocation & Location> {
+    const location = await this.deps.repository.getTrackedLocation(slug);
+    return { ...location, slug };
   }
 
   async trackLocation(location: string): Promise<Location & DetailedLocation> {
