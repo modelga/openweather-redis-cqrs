@@ -1,0 +1,33 @@
+services:
+  # Apps
+  consumer:
+    build:
+      target: development
+    volumes:
+      - ./apps/consumer:/app
+  manager:
+    build:
+      target: development
+    volumes:
+      - ./apps/manager:/app
+  frontend:
+    build:
+      target: development
+    volumes:
+      - ./apps/frontend:/app
+    ports:
+      - 7000:7000
+  cron:
+    build:
+      target: development
+    volumes:
+      - ./apps/cron:/app
+  # Utils
+  routing:
+    ports:
+      - 3000:80
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile
+  db:
+    volumes:
+      - ./data/db:/data

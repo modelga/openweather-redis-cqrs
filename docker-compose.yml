@@ -1,0 +1,33 @@
+services:
+  queue:
+    image: redis
+  db:
+    image: redis
+  consumer:
+    build:
+      context: ./apps/consumer
+      dockerfile: ../../config/Dockerfile
+    depends_on:
+      - db
+      - queue
+  cron:
+    build:
+      context: ./apps/cron
+      dockerfile: ../../config/Dockerfile
+    depends_on:
+      - db
+      - queue
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: ../../config/Dockerfile
+    depends_on:
+      - manager
+  manager:
+    build:
+      context: ./apps/manager
+      dockerfile: ../../config/Dockerfile
+    depends_on:
+      - db
+  routing:
+    image: caddy
