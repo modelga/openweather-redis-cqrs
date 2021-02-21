@@ -1,5 +1,4 @@
+import config from "./config";
 import app from "./app";
 
-const token = process.env.OPENWEATHER_API_TOKEN;
-
-app({ token, port: 80 }).start();
+app(config).start();
