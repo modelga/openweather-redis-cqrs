@@ -27,6 +27,8 @@ services:
     build:
       context: ./apps/manager
       dockerfile: ../../config/Dockerfile
+    environment:
+      - OPENWEATHER_API_TOKEN
     depends_on:
       - db
   routing:

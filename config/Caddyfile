@@ -3,7 +3,10 @@
 }
 
 localhost:80 {
-	reverse_proxy /api/* manager:80
+	route /api/* {
+		uri strip_prefix /api
+		reverse_proxy manager:80
+	}
 	reverse_proxy /* frontend:80
 	handle_errors {
 		respond "{http.error.status_code} {http.error.status_text}"

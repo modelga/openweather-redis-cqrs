@@ -1,7 +1,16 @@
 {
-  "extends": "shared/tsconfig",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
-  }
+    "allowJs": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "compiled",
+    "sourceMap": true,
+    "target": "es2018",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "files": ["app/index.ts"],
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "**/*.test.ts"]
 }

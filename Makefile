@@ -7,3 +7,6 @@ rebuild:
 
 reload:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec routing caddy reload -config /etc/caddy/Caddyfile
+
+install:
+	ls apps | xargs -P 4 -I {} sh -c 'cd apps/{}; npm install'
