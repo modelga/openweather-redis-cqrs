@@ -9,7 +9,6 @@ const WEATHER_UPDATED_CHANNEL = "WEATHER_UPDATED";
 export class RedisQueue implements Queue {
   private queue: IoRedis.Redis;
   private publisher: IoRedis.Redis;
-  private subsribedTo: string[] = [];
 
   constructor(config: Config) {
     this.queue = new IoRedis(config.queue.host);
@@ -33,10 +32,7 @@ export class RedisQueue implements Queue {
     callback: (slug: T) => void,
     transform: (m: any) => T,
   ) {
-    if (!this.subsribedTo.find((channel) => channel === channelToSubscribe)) {
-      this.subsribedTo.push(channelToSubscribe);
-      await this.queue.subscribe(channelToSubscribe);
-    }
+    await this.queue.subscribe(channelToSubscribe);
     this.queue.on("message", (channel, message) => {
       if (channel == channelToSubscribe) {
         callback(transform(message));

@@ -22,12 +22,12 @@ export class HistoryWeatherService implements ListeningInterface {
       return false;
     }
     return (
-      current.cloudiness !== old.cloudiness &&
-      current.humidity !== old.humidity &&
-      current.name !== old.name &&
-      current.rain !== old.rain &&
-      current.temperature !== old.temperature &&
-      current.wind !== old.wind
+      current.cloudiness === old.cloudiness &&
+      current.humidity === old.humidity &&
+      current.name === old.name &&
+      current.rain === old.rain &&
+      current.temperature === old.temperature &&
+      current.wind === old.wind
     );
   }
 }
