@@ -1,14 +1,19 @@
 import React, { useContext } from "react";
-import { Input } from "@material-ui/core";
-import { LocationContext } from "../contexts/LocationContext";
+import { TextField } from "@material-ui/core";
+import { SearchContext } from "../contexts/SearchContext";
 
 export const Search: React.FC<{}> = () => {
-  const { query } = useContext(LocationContext);
+  const { query } = useContext(SearchContext);
   return (
     <div>
-      <Input
+      <TextField
         fullWidth={true}
         aria-label="Search"
+        variant="outlined"
+        InputLabelProps={{
+          shrink: true,
+        }}
+        label="Location"
         placeholder="Enter the name of location to find it"
         onChange={(e) => query.set(e.target.value)}
       />
