@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Grid } from "@material-ui/core";
-import { WeatherContext } from "../contexts/WeatherContext";
-import { TrackingContext } from "../contexts/TrackingContext";
-
+import { WeatherContext } from "../../contexts/WeatherContext";
+import { TrackingContext } from "../../contexts/TrackingContext";
+import { WeatherBox } from "./WeatherBox";
+import { WeatherHistoryBox } from "./WeatherHistoryBox";
 export const WeatherData: React.FC<{}> = () => {
   const { result } = useContext(WeatherContext);
 
@@ -12,16 +13,17 @@ export const WeatherData: React.FC<{}> = () => {
   if (!result?.data?.current) {
     return <div>No weather data data</div>;
   }
+
   const { current, history } = result.data;
   return (
     <Grid container spacing={3}>
       <Grid item xs>
-        Temperature {current.temperature}
+        <WeatherBox weather={current} />
       </Grid>
       <Grid item xl>
         History:
         {history.map((entry, index) => (
-          <div key={index}>T: {entry.temperature}</div>
+          <WeatherHistoryBox entry={entry} key={index} />
         ))}
       </Grid>
     </Grid>

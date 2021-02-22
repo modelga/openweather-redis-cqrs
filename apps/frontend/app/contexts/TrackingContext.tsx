@@ -32,6 +32,8 @@ export const TrackingContainer: React.FC<{}> = (props) => {
       }
       const data = (await tracked.json()) as Result;
       setResult({ error: !data, data });
+    } else {
+      setResult({ error: false });
     }
   }, [setResult, searchResult]);
 

@@ -30,7 +30,8 @@ enum UpdateStatus {
 export type WeatherContextType = {
   result: DataWithError<Result>;
   updateStatus: UpdateStatus;
-  update: () => {};
+  update: () => void;
+  refresh: () => void;
 };
 
 export const WeatherContext = createContext<WeatherContextType>(null!);
@@ -54,23 +55,35 @@ export const WeatherContainer: React.FC<{}> = (props) => {
     },
     [setResult],
   );
-
-  const update = useCallback(async () => {
-    setUpdateStatus(UpdateStatus.NONE);
-    const response = await fetch(`/api/update/${searchResult.data.slug}`, { method: "PUT" });
-    if (response.status !== 200) {
-      setUpdateStatus(UpdateStatus.FAILED);
-      return;
-    }
-    setUpdateStatus(UpdateStatus.SCHEDULED);
-  }, [searchResult, trackingResult, setUpdateStatus]);
-
-  useEffect(() => {
+  const refresh = useCallback(() => {
     if (searchResult.data && trackingResult.data) {
       const { slug } = searchResult.data;
       getData(slug);
     }
-  }, [trackingResult, searchResult]);
+  }, [searchResult, trackingResult, getData]);
+
+  const update = useCallback(async () => {
+    if (updateStatus === UpdateStatus.SCHEDULED) {
+      return;
+    }
+    const response = await fetch(`/api/update/${searchResult.data.slug}`, { method: "PUT" });
+    setUpdateStatus(response.status === 204 ? UpdateStatus.SCHEDULED : UpdateStatus.FAILED);
+  }, [searchResult, trackingResult, setUpdateStatus, updateStatus]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  useEffect(() => {
+    console.log("Status change", UpdateStatus[updateStatus]);
+    if (updateStatus === UpdateStatus.SCHEDULED) {
+      const timer = setTimeout(async () => {
+        await refresh();
+        setUpdateStatus(UpdateStatus.UPDATED);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [updateStatus, refresh, setUpdateStatus]);
 
   return (
     <>
@@ -79,6 +92,7 @@ export const WeatherContainer: React.FC<{}> = (props) => {
           updateStatus,
           result,
           update,
+          refresh,
         }}
       >
         {props.children}

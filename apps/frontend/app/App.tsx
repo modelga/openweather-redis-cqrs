@@ -5,7 +5,7 @@ import { WeatherContainer } from "./contexts/WeatherContext";
 import { TrackingContainer } from "./contexts/TrackingContext";
 import { Actions } from "./components/Actions";
 import { Grid } from "@material-ui/core";
-import { Weather } from "./components/Weather";
+import { Weather } from "./components/weather/Weather";
 import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
