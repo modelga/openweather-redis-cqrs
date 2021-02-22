@@ -13,22 +13,21 @@ export class HistoryWeatherService implements ListeningInterface {
     const { repository } = this.deps;
     const oldWeather = await repository.getLatestWeatherAtLocation(slug);
     if (HistoryWeatherService.isEqual(weather, oldWeather)) {
-      console.log("No change", oldWeather, weather);
     } else {
       repository.updateLatestWeatherAtLocation(slug, { ...weather, timestamp: Date.now() });
     }
   }
   static isEqual(current: Weather, old: Weather) {
-    return !(
-      !current ||
-      !old ||
-      (current !== old &&
-        current.cloudiness !== old.cloudiness &&
-        current.humidity !== old.humidity &&
-        current.name !== old.name &&
-        current.rain !== old.rain &&
-        current.temperature !== old.temperature &&
-        current.wind !== old.wind)
+    if (!current || !old) {
+      return false;
+    }
+    return (
+      current.cloudiness !== old.cloudiness &&
+      current.humidity !== old.humidity &&
+      current.name !== old.name &&
+      current.rain !== old.rain &&
+      current.temperature !== old.temperature &&
+      current.wind !== old.wind
     );
   }
 }

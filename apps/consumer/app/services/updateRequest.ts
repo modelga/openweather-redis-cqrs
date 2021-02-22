@@ -15,6 +15,5 @@ export class UpdateRequestService implements ListeningInterface {
     const location = { ...(await repository.getTrackedLocation(slug)), slug };
     const weather = await client.getCurrentWeather(location);
     await queue.publishWeatherData(weather);
-    console.log("Updating", slug);
   }
 }

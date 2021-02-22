@@ -20,7 +20,7 @@ export class RedisQueue implements Queue {
     await this.subscribeToChannel<string>(UPDATE_REQUEST_CHANNEL, callback, (a) => a as string);
   }
 
-  async listenToWeatherData(callback: (slug: Weather) => {}): Promise<void> {
+  async listenToWeatherData(callback: (slug: Weather) => void): Promise<void> {
     await this.subscribeToChannel(WEATHER_UPDATED_CHANNEL, callback, (a) => JSON.parse(a) as Weather);
   }
 
@@ -39,7 +39,6 @@ export class RedisQueue implements Queue {
     }
     this.queue.on("message", (channel, message) => {
       if (channel == channelToSubscribe) {
-        console.log("Message from ", channel, "is ", message);
         callback(transform(message));
       }
     });

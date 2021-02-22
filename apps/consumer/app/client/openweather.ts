@@ -28,7 +28,6 @@ export default class OpenWeather implements Client {
       const { data } = await this.client.get<Data_2_5_WeatherResponse>("data/2.5/weather", {
         params: { q: `${name}` },
       });
-      console.log(data);
       const modelData: Weather = {
         name,
         slug,
