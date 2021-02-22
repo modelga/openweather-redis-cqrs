@@ -7,6 +7,9 @@ services:
     build:
       context: ./apps/consumer
       dockerfile: ../../config/Dockerfile
+    environment:
+      - OPENWEATHER_API_TOKEN
+      - OPENWEATHER_API_URL=https://api.openweathermap.org/
     depends_on:
       - db
       - queue
@@ -14,6 +17,9 @@ services:
     build:
       context: ./apps/cron
       dockerfile: ../../config/Dockerfile
+    environment:
+      - OPENWEATHER_API_TOKEN
+      - OPENWEATHER_API_URL=https://api.openweathermap.org/
     depends_on:
       - db
       - queue
