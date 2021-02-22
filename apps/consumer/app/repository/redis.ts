@@ -26,7 +26,7 @@ export class RedisRepository implements Repository {
     await this.set(Prefix.WEATHER_CURRENT, locationSlug, weather);
   }
   async updateLatestWeatherAtLocation(locationSlug: string, weather: HistoryWeather): Promise<void> {
-    await this.lpush(Prefix.WEATHER_HISTORY, locationSlug, JSON.stringify(weather));
+    await this.lpush(Prefix.WEATHER_HISTORY, locationSlug, weather);
   }
 
   getLatestWeatherAtLocation(locationSlug: string): Promise<HistoryWeather> {
