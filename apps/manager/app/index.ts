@@ -1,19 +1,18 @@
 import express from "express";
 import { Config } from "../config";
-import { Client, factory as clientFactory } from "./client";
-import { factory as repositoryFactory, Repository } from "./repository";
-import { factory as queueFactory, Queue } from "./queue";
+import { factory as clientFactory } from "./client";
+import { factory as repositoryFactory } from "./repository";
+import { factory as queueFactory } from "./queue";
 
 import * as controllers from "./controllers";
 import { SearchService, TrackService, WeatherService, UpdateService } from "./services";
-import { updateController } from "./controllers/update";
 
 function di(config: Config) {
   const client = clientFactory(config);
   const queue = queueFactory(config);
   const repository = repositoryFactory(config);
 
-  const searchService = new SearchService({ client, repository });
+  const searchService = new SearchService({ client });
   const trackService = new TrackService({ client, repository });
   const weatherService = new WeatherService({ repository });
   const updateService = new UpdateService({ queue });
