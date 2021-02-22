@@ -2,7 +2,7 @@ import { Client } from "./types";
 import { Config } from "../../config";
 import axios, { AxiosInstance } from "axios";
 
-type Geo1_0DirectResponse = {
+type Geo_1_0_DirectResponse = {
   name: string;
   local_names: Record<string, string>;
   lat: number;
@@ -18,15 +18,15 @@ export default class OpenWeather implements Client {
 
   async queryForLocation(q: string) {
     try {
-      const response = await this.client.get<Geo1_0DirectResponse[]>("geo/1.0/direct", { params: { q } });
-      return response.data[0]?.name;
+      const response = await this.client.get<Geo_1_0_DirectResponse[]>("geo/1.0/direct", { params: { q } });
+      return response.data[0]?.name; // Does not support multiple countries, need to refactor
     } catch (err) {
       return;
     }
   }
 
   async getLocationDetails(location: string) {
-    const response = await this.client.get<Geo1_0DirectResponse[]>("geo/1.0/direct", { params: { q: location } });
+    const response = await this.client.get<Geo_1_0_DirectResponse[]>("geo/1.0/direct", { params: { q: location } });
     if (!response.data[0]) {
       throw new Error(`Not found location ${location}`);
     }

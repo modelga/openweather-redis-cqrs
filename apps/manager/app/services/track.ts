@@ -7,8 +7,11 @@ export class TrackService {
   constructor(private readonly deps: { repository: Repository; client: Client }) {}
 
   async isTracked(slug: string): Promise<DetailedLocation & Location> {
-    const location = await this.deps.repository.getTrackedLocation(slug);
-    return { ...location, slug };
+    const detailedLocation = await this.deps.repository.getTrackedLocation(slug);
+    if (!detailedLocation) {
+      return null;
+    }
+    return { ...detailedLocation, slug };
   }
 
   async trackLocation(location: string): Promise<Location & DetailedLocation> {
@@ -19,6 +22,9 @@ export class TrackService {
     return { ...detailedLocation, slug };
   }
   async stopTracking(locationSlug: string): Promise<void> {
-    await this.deps.repository.deleteLocationToTrack(locationSlug);
+    const count = await this.deps.repository.deleteLocationToTrack(locationSlug);
+    if (count === 0) {
+      throw new Error(`Key ${locationSlug} didn't exists!`);
+    }
   }
 }

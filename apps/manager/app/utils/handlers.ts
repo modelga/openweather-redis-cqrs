@@ -11,10 +11,6 @@ export function asyncHandler(handler: RequestHandler) {
 }
 
 export function createResponse(res: Response, data: any) {
-  if (!data) {
-    res.status(404);
-    return res.send();
-  }
   switch (typeof data) {
     case "object":
       return res.json(data);

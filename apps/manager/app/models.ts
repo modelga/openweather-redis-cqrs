@@ -8,7 +8,7 @@ export type Weather = {
   temperature: number;
 };
 
-export type HistoryWeather = Weather & {};
+export type HistoryWeather = Weather & { timestamp: number };
 
 export type Location = {
   name: string;

@@ -22,11 +22,9 @@ export class RedisRepository implements Repository {
     return this.get(Prefix.TRACKING, locationSlug);
   }
 
-  async deleteLocationToTrack(locationSlug: string): Promise<void> {
-    const deleted = await this.del(Prefix.TRACKING, locationSlug);
-    if (deleted === 0) {
-      throw new Error("Key didn't exists");
-    }
+  async deleteLocationToTrack(locationSlug: string): Promise<number> {
+    const count = await this.del(Prefix.TRACKING, locationSlug);
+    return count;
   }
 
   async getWeatherCurrentAtLocation(locationSlug: string): Promise<Weather> {

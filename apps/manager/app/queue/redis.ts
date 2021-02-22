@@ -2,7 +2,7 @@ import { Queue } from "./types";
 import { Config } from "../../config";
 import IoRedis from "ioredis";
 
-const UPDATE_CHANNEL = "update_weather";
+const UPDATE_REQUEST_CHANNEL = "UPDATE_REQUEST";
 
 export class RedisQueue implements Queue {
   private queue: IoRedis.Redis;
@@ -10,7 +10,7 @@ export class RedisQueue implements Queue {
     this.queue = new IoRedis(config.queue.host);
   }
   async forceUpdate(locationSlug: string): Promise<number> {
-    const subscribers = await this.queue.publish(UPDATE_CHANNEL, locationSlug);
+    const subscribers = await this.queue.publish(UPDATE_REQUEST_CHANNEL, locationSlug);
     return subscribers;
   }
 }
