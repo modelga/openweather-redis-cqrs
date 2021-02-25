@@ -1,4 +1,5 @@
 import IoRedis from "ioredis";
+import { create } from "ts-node";
 
 import { Config } from "../../config";
 import { DetailedLocation, HistoryWeather, Weather } from "../models";
@@ -8,9 +9,13 @@ enum Prefix {
   WEATHER_CURRENT = "weather_current",
   WEATHER_HISTORY = "weather_history",
   TRACKING = "location_tracking",
+  EVENT_LOG = "event_log",
 }
 
 function createKey(type: Prefix, key: string): string {
+  if (key === null) {
+    return type;
+  }
   return `${type}_${key}`;
 }
 
@@ -52,6 +57,11 @@ export class RedisRepository implements Repository {
   deleteWeatherHistoryAtLocation(locationId: string): Promise<number> {
     return this.del(Prefix.WEATHER_HISTORY, locationId);
   }
+
+  updateEventLog(data: any): Promise<void> {
+    return this.rpush(Prefix.EVENT_LOG, null, data);
+  }
+
   private async set(type: Prefix, key: string, data: any): Promise<void> {
     await this.db.set(createKey(type, key), JSON.stringify(data));
   }
@@ -67,6 +77,10 @@ export class RedisRepository implements Repository {
 
   private async lpush(type: Prefix, key: string, data: any): Promise<void> {
     await this.db.lpush(createKey(type, key), JSON.stringify(data));
+  }
+
+  private async rpush(type: Prefix, key: string, data: any): Promise<void> {
+    await this.db.rpush(createKey(type, key), JSON.stringify(data));
   }
 
   private async get<T>(type: Prefix, key: string): Promise<T> {

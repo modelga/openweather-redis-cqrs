@@ -1,10 +1,11 @@
 import { DetailedLocation } from "../models";
+import { Publisher, PublisherTypes } from "../publisher";
 import { Queue } from "../queue";
 import { Repository } from "../repository";
 import { ListeningInterface } from "./types";
 
 export class TrackLocationService implements ListeningInterface {
-  constructor(private readonly deps: { repository: Repository; queue: Queue }) {}
+  constructor(private readonly deps: { repository: Repository; queue: Queue; publisher: Publisher }) {}
   listen() {
     const { queue } = this.deps;
     return [
@@ -22,8 +23,8 @@ export class TrackLocationService implements ListeningInterface {
     ]);
   }
   async listenToTrackLocation(location: DetailedLocation) {
-    const { repository, queue } = this.deps;
-    repository.addLocationToTrack(location.id, location);
-    queue.publishUpdateRequest(location.id);
+    const { repository, publisher } = this.deps;
+    await repository.addLocationToTrack(location.id, location);
+    await publisher.publishUpdateRequest(location.id);
   }
 }

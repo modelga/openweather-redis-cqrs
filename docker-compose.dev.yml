@@ -5,11 +5,11 @@ services:
       target: development
     volumes:
       - ./apps/consumer:/app
-  manager:
+  api:
     build:
       target: development
     volumes:
-      - ./apps/manager:/app
+      - ./apps/api:/app
   frontend:
     build:
       target: development

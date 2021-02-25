@@ -1,4 +1,4 @@
-import { Queue } from "./types";
+import { Queue, RawMessage } from "./types";
 import { Config } from "../../config";
 import IoRedis from "ioredis";
 import { DetailedLocation, Weather } from "../models";
@@ -7,14 +7,20 @@ const UPDATE_REQUEST_CHANNEL = "UPDATE_REQUEST";
 const TRACK_LOCATION_CHANNEL = "TRACK_LOCATION";
 const UNTRACK_LOCATION_CHANNEL = "UNTRACK_LOCATION";
 const WEATHER_UPDATED_CHANNEL = "WEATHER_UPDATED";
+const ANY = "*";
 
 export class RedisQueue implements Queue {
   private queue: IoRedis.Redis;
-  private publisher: IoRedis.Redis;
 
-  constructor(config: Config) {
-    this.queue = new IoRedis(config.queue.host);
-    this.publisher = new IoRedis(config.queue.host);
+  constructor(host: string) {
+    this.queue = new IoRedis(host);
+  }
+  async listenToAnyMessage(callback: (id: RawMessage) => void): Promise<string> {
+    const transformToRawMessage: (m: any, channel: string) => RawMessage = (message, channel) => {
+      return { date: Date.now(), message, channel };
+    };
+
+    return this.subscribeToChannel<RawMessage>(ANY, callback, transformToRawMessage);
   }
 
   async listenToUpdateRequest(callback: (weather: string) => void): Promise<string> {
@@ -33,34 +39,18 @@ export class RedisQueue implements Queue {
     return this.subscribeToChannel(WEATHER_UPDATED_CHANNEL, callback, RedisQueue.parseJson);
   }
 
-  async publishWeatherData(weather: Weather) {
-    return this.publish(WEATHER_UPDATED_CHANNEL, JSON.stringify(weather));
-  }
-
-  async publishUpdateRequest(locationId: string) {
-    return this.publish(UPDATE_REQUEST_CHANNEL, locationId);
-  }
-
-  private async publish(channel: string, message: string): Promise<void> {
-    const consumers = await this.publisher.publish(channel, message);
-    console.log(
-      `Message of ${message.length} bytes, has been published on channel ${channel} to ${consumers} consumers`,
-    );
-    return;
-  }
-
   private async subscribeToChannel<T>(
-    channelToSubscribe: string,
+    patternToSubscribe: string,
     callback: (id: T) => void,
-    transform: (m: any) => T,
+    transform: (m: any, channel: string) => T = (a) => a,
   ): Promise<string> {
-    await this.queue.subscribe(channelToSubscribe);
-    this.queue.on("message", (channel, message) => {
-      if (channel == channelToSubscribe) {
-        callback(transform(message));
+    await this.queue.psubscribe(patternToSubscribe);
+    this.queue.on("pmessage", (pattern, channel, message) => {
+      if (pattern === patternToSubscribe) {
+        callback(transform(message, channel));
       }
     });
-    return channelToSubscribe;
+    return patternToSubscribe;
   }
 
   private static parseJson<T>(obj: any): T {

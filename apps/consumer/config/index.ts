@@ -1,4 +1,5 @@
 import { Clients } from "../app/client";
+import { PublisherTypes } from "../app/publisher";
 import { QueueTypes } from "../app/queue/types";
 import { DBTypes } from "../app/repository";
 
@@ -13,10 +14,18 @@ export type OpenWeatherClient = ClientConfig & {
 };
 
 export type Queue = {
-  type: QueueTypes;
+  type: never;
 };
-export type RedisQueue = Queue & {
+export type RedisQueue = {
   type: QueueTypes.Redis;
+  host: RedisConnectionUri;
+};
+
+export type Publisher = {
+  type: never;
+};
+export type RedisPublisher = {
+  type: PublisherTypes.Redis;
   host: RedisConnectionUri;
 };
 
@@ -27,11 +36,13 @@ export type RedisDB = DB & {
   type: DBTypes.Redis;
   host: RedisConnectionUri;
 };
+type Queues = Queue | RedisQueue;
+type Publishers = Publisher | RedisPublisher;
 
 export type Config = {
-  port?: number;
   client: OpenWeatherClient;
-  queue: RedisQueue;
+  queue: Queues;
+  publisher: Publishers;
   db: RedisDB;
 };
 
@@ -43,6 +54,10 @@ const config: Config = {
   },
   queue: {
     type: QueueTypes.Redis,
+    host: "redis://queue:6379",
+  },
+  publisher: {
+    type: PublisherTypes.Redis,
     host: "redis://queue:6379",
   },
   db: {

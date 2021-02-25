@@ -6,7 +6,7 @@ export * from "./types";
 export function factory(config: Config): Queue {
   switch (config.queue.type) {
     case QueueTypes.Redis:
-      return new RedisQueue(config);
+      return new RedisQueue(config.queue.host);
     default:
       throw new Error(`Not found client for specified for type ${config.client.type}`);
   }

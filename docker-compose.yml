@@ -18,15 +18,17 @@ services:
       context: ./apps/frontend
       dockerfile: ../../config/Dockerfile
     depends_on:
-      - manager
-  manager:
+      - api
+  api:
     build:
-      context: ./apps/manager
+      context: ./apps/api
       dockerfile: ../../config/Dockerfile
     environment:
       - OPENWEATHER_API_TOKEN
       - OPENWEATHER_API_URL=https://api.openweathermap.org/
     depends_on:
       - db
+      - queue
+      - consumer
   routing:
     image: caddy

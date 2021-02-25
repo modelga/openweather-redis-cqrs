@@ -16,4 +16,6 @@ export interface Repository {
   deleteTrackedLocation(locationId: string): Promise<number>;
   deleteWeatherAtLocation(locationId: string): Promise<number>;
   deleteWeatherHistoryAtLocation(locationId: string): Promise<number>;
+
+  updateEventLog(data: any): Promise<void>;
 }
