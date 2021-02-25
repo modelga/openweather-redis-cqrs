@@ -1,15 +1,20 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import { useDebounce } from "../hooks/useDebounce";
-import { DataWithError } from "../utils";
 
-type SearchResult = {
+export type SearchResult = {
   name: string;
-  slug: string;
+  id: string;
+  country: string;
+  state: string;
+  lat: number;
+  lon: number;
+  isTracked: boolean;
 };
 
 export type SearchContextType = {
   query: { value: string; set: (q: string) => void };
-  searchResult: DataWithError<SearchResult>;
+  searchResult: SearchResult[];
+  refresh: () => Promise<void>;
 };
 
 export const SearchContext = createContext<SearchContextType>(null!);
@@ -17,25 +22,25 @@ SearchContext.displayName = "SearchContext";
 
 export const SearchContainer: React.FC<{}> = (props) => {
   const [query, setQuery] = useState<string>("");
-  const [searchResult, setSearchResult] = useState<DataWithError<SearchResult>>({ error: false });
+  const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
   const debouncedQuery = useDebounce(query, 300);
 
   const doLookup = useCallback(
     async (query: string) => {
-      const response = await fetch(`/api/search/${query}`);
+      const response = await fetch(`/api/search?q=${query}`);
       if (response.status !== 200) {
-        setSearchResult({ error: true });
+        setSearchResult([]);
         return;
       }
-      const data = (await response.json()) as SearchResult;
-      setSearchResult({ error: !data, data });
+      const data = (await response.json()) as SearchResult[];
+      setSearchResult(data);
     },
     [setSearchResult],
   );
 
   useEffect(() => {
     if (!debouncedQuery) {
-      setSearchResult({ error: false });
+      setSearchResult([]);
       return;
     }
     doLookup(debouncedQuery);
@@ -47,6 +52,7 @@ export const SearchContainer: React.FC<{}> = (props) => {
         value={{
           query: { value: debouncedQuery, set: setQuery },
           searchResult,
+          refresh: () => doLookup(debouncedQuery),
         }}
       >
         {props.children}

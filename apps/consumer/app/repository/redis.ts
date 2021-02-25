@@ -1,7 +1,8 @@
-import { Repository } from "./types";
-import { Config } from "../../config";
 import IoRedis from "ioredis";
-import { Weather, HistoryWeather, Location, DetailedLocation } from "../models";
+
+import { Config } from "../../config";
+import { DetailedLocation, HistoryWeather, Weather } from "../models";
+import { Repository } from "./types";
 
 enum Prefix {
   WEATHER_CURRENT = "weather_current",
@@ -19,22 +20,44 @@ export class RedisRepository implements Repository {
     this.db = new IoRedis(config.db.host);
   }
 
-  getTrackedLocation(locationSlug: string): Promise<DetailedLocation> {
-    return this.get(Prefix.TRACKING, locationSlug);
-  }
-  async updateWeateherAtLocation(locationSlug: string, weather: Weather) {
-    await this.set(Prefix.WEATHER_CURRENT, locationSlug, weather);
-  }
-  async updateLatestWeatherAtLocation(locationSlug: string, weather: HistoryWeather): Promise<void> {
-    await this.lpush(Prefix.WEATHER_HISTORY, locationSlug, weather);
+  async addLocationToTrack(locationId: string, detailedLocation: DetailedLocation): Promise<void> {
+    await this.set(Prefix.TRACKING, locationId, detailedLocation);
+    return;
   }
 
-  getLatestWeatherAtLocation(locationSlug: string): Promise<HistoryWeather> {
-    return this.lindex(Prefix.WEATHER_HISTORY, locationSlug, 0);
+  async deleteTrackedLocation(locationId: string): Promise<number> {
+    const count = await this.del(Prefix.TRACKING, locationId);
+    return count;
   }
 
+  getTrackedLocation(locationId: string): Promise<DetailedLocation> {
+    return this.get(Prefix.TRACKING, locationId);
+  }
+
+  async updateWeateherAtLocation(locationId: string, weather: Weather) {
+    await this.set(Prefix.WEATHER_CURRENT, locationId, weather);
+  }
+
+  deleteWeatherAtLocation(locationId: string): Promise<number> {
+    return this.del(Prefix.WEATHER_CURRENT, locationId);
+  }
+  async updateLatestWeatherAtLocation(locationId: string, weather: HistoryWeather): Promise<void> {
+    await this.lpush(Prefix.WEATHER_HISTORY, locationId, weather);
+  }
+
+  getLatestWeatherAtLocation(locationId: string): Promise<HistoryWeather> {
+    return this.lindex(Prefix.WEATHER_HISTORY, locationId, 0);
+  }
+
+  deleteWeatherHistoryAtLocation(locationId: string): Promise<number> {
+    return this.del(Prefix.WEATHER_HISTORY, locationId);
+  }
   private async set(type: Prefix, key: string, data: any): Promise<void> {
     await this.db.set(createKey(type, key), JSON.stringify(data));
+  }
+
+  private async del(type: Prefix, key: string): Promise<number> {
+    return await this.db.del(createKey(type, key));
   }
 
   private async lindex<T>(type: Prefix, key: string, offset: number): Promise<T> {

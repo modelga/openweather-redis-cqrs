@@ -17,11 +17,6 @@ services:
       - ./apps/frontend:/app
     ports:
       - 7000:7000
-  cron:
-    build:
-      target: development
-    volumes:
-      - ./apps/cron:/app
   # Utils
   routing:
     ports:

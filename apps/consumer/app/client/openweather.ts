@@ -1,7 +1,7 @@
 import { Client } from "./types";
 import { Config } from "../../config";
 import axios, { AxiosInstance } from "axios";
-import { DetailedLocation, Location, Weather } from "../models";
+import { DetailedLocation, Weather } from "../models";
 
 type Data_2_5_WeatherResponse = {
   main: {
@@ -23,14 +23,11 @@ export default class OpenWeather implements Client {
     this.client = axios.create({ baseURL: config.client.host, params: { appid: config.client.token } });
   }
 
-  async getCurrentWeather({ slug, country, name }: DetailedLocation & Location): Promise<Weather> {
+  async getCurrentWeather({ id, lat, lon }: DetailedLocation): Promise<Weather> {
     try {
-      const { data } = await this.client.get<Data_2_5_WeatherResponse>("data/2.5/weather", {
-        params: { q: `${name}` },
-      });
+      const { data } = await this.client.get<Data_2_5_WeatherResponse>("data/2.5/weather", { params: { lat, lon } });
       const modelData: Weather = {
-        name,
-        slug,
+        id,
         wind: data?.wind.speed || 0,
         rain: (data?.rain || {})["1h"] || 0,
         cloudiness: data?.clouds?.all || 0,

@@ -5,16 +5,18 @@ import { ListeningInterface } from "./types";
 
 export class HistoryWeatherService implements ListeningInterface {
   constructor(private readonly deps: { repository: Repository; queue: Queue }) {}
+
   listen() {
-    this.deps.queue.listenToWeatherData((weather: Weather) => this.listenToWeatherData(weather));
+    return this.deps.queue.listenToWeatherData((weather: Weather) => this.listenToWeatherData(weather));
   }
+
   async listenToWeatherData(weather: Weather) {
-    const { slug } = weather;
+    const { id } = weather;
     const { repository } = this.deps;
-    const oldWeather = await repository.getLatestWeatherAtLocation(slug);
+    const oldWeather = await repository.getLatestWeatherAtLocation(id);
     if (HistoryWeatherService.isEqual(weather, oldWeather)) {
     } else {
-      repository.updateLatestWeatherAtLocation(slug, { ...weather, timestamp: Date.now() });
+      repository.updateLatestWeatherAtLocation(id, { ...weather, timestamp: Date.now() });
     }
   }
   static isEqual(current: Weather, old: Weather) {
@@ -24,7 +26,6 @@ export class HistoryWeatherService implements ListeningInterface {
     return (
       current.cloudiness === old.cloudiness &&
       current.humidity === old.humidity &&
-      current.name === old.name &&
       current.rain === old.rain &&
       current.temperature === old.temperature &&
       current.wind === old.wind

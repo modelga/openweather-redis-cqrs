@@ -1,12 +1,14 @@
-import React from "react";
-import { Search } from "./components/Search";
-import { SearchContainer } from "./contexts/SearchContext";
-import { WeatherContainer } from "./contexts/WeatherContext";
-import { TrackingContainer } from "./contexts/TrackingContext";
-import { Actions } from "./components/Actions";
 import { Grid } from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import React from "react";
+
+import { Search } from "./components/Search";
+import { SearchResults } from "./components/SearchResults";
 import { Weather } from "./components/weather/Weather";
-import { Theme, createStyles, makeStyles } from "@material-ui/core/styles";
+import { SearchContainer } from "./contexts/SearchContext";
+import { TrackingContainer } from "./contexts/TrackingContext";
+import { WeatherContainer } from "./contexts/WeatherContext";
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     padding: {
@@ -26,8 +28,7 @@ const App: React.FC<{}> = () => {
           <WeatherContainer>
             <Grid container direction="column" className={classes.padding}>
               <Search />
-              <Actions />
-              <Weather />
+              <SearchResults />
             </Grid>
           </WeatherContainer>
         </TrackingContainer>

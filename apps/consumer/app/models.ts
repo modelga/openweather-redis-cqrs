@@ -1,6 +1,5 @@
 export type Weather = {
-  name: string;
-  slug: string;
+  id: string;
   wind: number;
   cloudiness: number;
   rain: number;
@@ -10,14 +9,11 @@ export type Weather = {
 
 export type HistoryWeather = Weather & { timestamp: number };
 
-export type Location = {
-  name: string;
-  slug: string;
-};
-
 export type DetailedLocation = {
+  id: string;
   name: string;
   lon: number;
   lat: number;
   country: string;
+  state: string;
 };

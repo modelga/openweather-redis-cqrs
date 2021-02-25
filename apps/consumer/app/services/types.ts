@@ -1,3 +1,3 @@
 export interface ListeningInterface {
-  listen(): void;
+  listen(): Promise<string> | Promise<string>[];
 }

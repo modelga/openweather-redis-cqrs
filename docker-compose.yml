@@ -13,16 +13,6 @@ services:
     depends_on:
       - db
       - queue
-  cron:
-    build:
-      context: ./apps/cron
-      dockerfile: ../../config/Dockerfile
-    environment:
-      - OPENWEATHER_API_TOKEN
-      - OPENWEATHER_API_URL=https://api.openweathermap.org/
-    depends_on:
-      - db
-      - queue
   frontend:
     build:
       context: ./apps/frontend

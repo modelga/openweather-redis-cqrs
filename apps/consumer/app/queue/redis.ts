@@ -1,9 +1,11 @@
 import { Queue } from "./types";
 import { Config } from "../../config";
 import IoRedis from "ioredis";
-import { Weather } from "../models";
+import { DetailedLocation, Weather } from "../models";
 
 const UPDATE_REQUEST_CHANNEL = "UPDATE_REQUEST";
+const TRACK_LOCATION_CHANNEL = "TRACK_LOCATION";
+const UNTRACK_LOCATION_CHANNEL = "UNTRACK_LOCATION";
 const WEATHER_UPDATED_CHANNEL = "WEATHER_UPDATED";
 
 export class RedisQueue implements Queue {
@@ -15,28 +17,53 @@ export class RedisQueue implements Queue {
     this.publisher = new IoRedis(config.queue.host);
   }
 
-  async listenToUpdateRequest(callback: (slug: string) => void): Promise<void> {
-    await this.subscribeToChannel<string>(UPDATE_REQUEST_CHANNEL, callback, (a) => a as string);
+  async listenToUpdateRequest(callback: (weather: string) => void): Promise<string> {
+    return this.subscribeToChannel<string>(UPDATE_REQUEST_CHANNEL, callback, (a) => a as string);
   }
 
-  async listenToWeatherData(callback: (slug: Weather) => void): Promise<void> {
-    await this.subscribeToChannel(WEATHER_UPDATED_CHANNEL, callback, (a) => JSON.parse(a) as Weather);
+  async listenToTrackLocation(callback: (weather: DetailedLocation) => void): Promise<string> {
+    return this.subscribeToChannel<DetailedLocation>(TRACK_LOCATION_CHANNEL, callback, RedisQueue.parseJson);
+  }
+
+  async listenToUntrackLocation(callback: (weather: string) => void): Promise<string> {
+    return this.subscribeToChannel<string>(UNTRACK_LOCATION_CHANNEL, callback, (a) => a as string);
+  }
+
+  async listenToWeatherData(callback: (weather: Weather) => void): Promise<string> {
+    return this.subscribeToChannel(WEATHER_UPDATED_CHANNEL, callback, RedisQueue.parseJson);
   }
 
   async publishWeatherData(weather: Weather) {
-    await this.publisher.publish(WEATHER_UPDATED_CHANNEL, JSON.stringify(weather));
+    return this.publish(WEATHER_UPDATED_CHANNEL, JSON.stringify(weather));
+  }
+
+  async publishUpdateRequest(locationId: string) {
+    return this.publish(UPDATE_REQUEST_CHANNEL, locationId);
+  }
+
+  private async publish(channel: string, message: string): Promise<void> {
+    const consumers = await this.publisher.publish(channel, message);
+    console.log(
+      `Message of ${message.length} bytes, has been published on channel ${channel} to ${consumers} consumers`,
+    );
+    return;
   }
 
   private async subscribeToChannel<T>(
     channelToSubscribe: string,
-    callback: (slug: T) => void,
+    callback: (id: T) => void,
     transform: (m: any) => T,
-  ) {
+  ): Promise<string> {
     await this.queue.subscribe(channelToSubscribe);
     this.queue.on("message", (channel, message) => {
       if (channel == channelToSubscribe) {
         callback(transform(message));
       }
     });
+    return channelToSubscribe;
+  }
+
+  private static parseJson<T>(obj: any): T {
+    return JSON.parse(obj) as T;
   }
 }

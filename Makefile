@@ -19,3 +19,6 @@ install:
 
 bash: 
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec $(APP) bash
+
+logs:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml logs -f --tail 10

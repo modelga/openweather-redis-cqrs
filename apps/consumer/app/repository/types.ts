@@ -5,9 +5,15 @@ export enum DBTypes {
 }
 
 export interface Repository {
-  getTrackedLocation(locationSlug: string): Promise<DetailedLocation>;
+  addLocationToTrack(locationId: string, detailedLocation: DetailedLocation): Promise<void>;
 
-  updateWeateherAtLocation(locationSlug: string, weather: Weather): Promise<void>;
-  getLatestWeatherAtLocation(locationSlug: string): Promise<HistoryWeather>;
-  updateLatestWeatherAtLocation(locationSlug: string, weather: HistoryWeather): Promise<void>;
+  getTrackedLocation(locationId: string): Promise<DetailedLocation>;
+  getLatestWeatherAtLocation(locationId: string): Promise<HistoryWeather>;
+
+  updateWeateherAtLocation(locationId: string, weather: Weather): Promise<void>;
+  updateLatestWeatherAtLocation(locationId: string, weather: HistoryWeather): Promise<void>;
+
+  deleteTrackedLocation(locationId: string): Promise<number>;
+  deleteWeatherAtLocation(locationId: string): Promise<number>;
+  deleteWeatherHistoryAtLocation(locationId: string): Promise<number>;
 }

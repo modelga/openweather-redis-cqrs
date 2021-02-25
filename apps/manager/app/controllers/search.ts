@@ -5,9 +5,9 @@ import { asyncHandler, createResponse } from "../utils";
 export function searchController(service: SearchService) {
   const router = Router({});
   router.get(
-    "/:location",
+    "/",
     asyncHandler(async (req, res) => {
-      const data = await service.queryForLocation(req.params.location);
+      const data = await service.queryForLocation(req.query.q as string);
       createResponse(res, data);
     }),
   );

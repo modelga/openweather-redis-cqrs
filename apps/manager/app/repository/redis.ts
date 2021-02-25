@@ -1,7 +1,7 @@
 import { Repository } from "./types";
 import { Config } from "../../config";
 import IoRedis from "ioredis";
-import { Weather, HistoryWeather, Location, DetailedLocation } from "../models";
+import { Weather, HistoryWeather, DetailedLocation, DetailedLocationWithId } from "../models";
 
 enum Prefix {
   WEATHER_CURRENT = "weather_current",
@@ -13,25 +13,15 @@ export class RedisRepository implements Repository {
   constructor(config: Config) {
     this.db = new IoRedis(config.db.host);
   }
-
-  async addLocationToTrack(locationSlug: string, detailedLocation: DetailedLocation): Promise<void> {
-    await this.set(Prefix.TRACKING, locationSlug, detailedLocation);
-    return;
-  }
-  async getTrackedLocation(locationSlug: string): Promise<DetailedLocation> {
-    return this.get(Prefix.TRACKING, locationSlug);
+  getTrackedLocation(locationId: string): Promise<DetailedLocationWithId> {
+    return this.get(Prefix.TRACKING, locationId);
   }
 
-  async deleteLocationToTrack(locationSlug: string): Promise<number> {
-    const count = await this.del(Prefix.TRACKING, locationSlug);
-    return count;
+  getWeatherCurrentAtLocation(locationId: string): Promise<Weather> {
+    return this.get(Prefix.WEATHER_CURRENT, locationId);
   }
-
-  async getWeatherCurrentAtLocation(locationSlug: string): Promise<Weather> {
-    return this.get(Prefix.WEATHER_CURRENT, locationSlug);
-  }
-  async getWeatherHistoryAtLocation(locationSlug: string, offset: number, limit: number): Promise<HistoryWeather[]> {
-    return this.lrange(Prefix.WEATHER_HISTORY, locationSlug, offset, limit);
+  getWeatherHistoryAtLocation(locationId: string, offset: number, limit: number): Promise<HistoryWeather[]> {
+    return this.lrange(Prefix.WEATHER_HISTORY, locationId, offset, limit);
   }
 
   async set(type: Prefix, key: string, data: any): Promise<void> {

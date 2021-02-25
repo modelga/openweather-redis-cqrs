@@ -1,70 +1,44 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { DataWithError } from "../utils";
-import { SearchContext } from "./SearchContext";
-
-type Result = {
-  country: string;
-  name: string;
-  lat: number;
-  lon: number;
-};
+import { SearchContext, SearchResult } from "./SearchContext";
 
 export type TrackingContextType = {
-  result: DataWithError<Result>;
-  track: () => void;
-  unTrack: () => void;
+  track: (searchResult: SearchResult) => void;
+  unTrack: (SearchResult: SearchResult) => void;
 };
 
 export const TrackingContext = createContext<TrackingContextType>(null!);
 TrackingContext.displayName = "TrackingContext";
 
 export const TrackingContainer: React.FC<{}> = (props) => {
-  const { searchResult } = useContext(SearchContext);
-  const [result, setResult] = useState<DataWithError<Result>>({ error: false });
+  const { refresh } = useContext(SearchContext);
 
-  const checkTrack = useCallback(async () => {
-    if (searchResult.data) {
-      const { slug } = searchResult.data;
-      const tracked = await fetch(`/api/track/${slug}`);
-      if (tracked.status !== 200) {
-        setResult({ error: true });
-        return;
-      }
-      const data = (await tracked.json()) as Result;
-      setResult({ error: !data, data });
-    } else {
-      setResult({ error: false });
-    }
-  }, [setResult, searchResult]);
+  const track = useCallback(
+    async (searchResult: SearchResult) => {
+      await fetch(`/api/track`, {
+        body: JSON.stringify(searchResult),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "post",
+      });
+      setTimeout(refresh, 1000);
+    },
+    [refresh],
+  );
 
-  useEffect(() => {
-    checkTrack();
-  }, [checkTrack]);
-
-  const track = useCallback(async () => {
-    const { slug } = searchResult.data;
-    const response = await fetch(`/api/track/${slug}`, { method: "post" });
-    if (response.status !== 200) {
-      setResult({ error: false });
-    }
-    const data = (await response.json()) as Result;
-    setResult({ error: !data, data });
-  }, [searchResult]);
-
-  const unTrack = useCallback(async () => {
-    const { slug } = searchResult.data;
-    const response = await fetch(`/api/track/${slug}`, { method: "delete" });
-    if (response.status !== 204) {
-      setResult({ error: false });
-    }
-    checkTrack();
-  }, [result, searchResult, setResult, checkTrack]);
+  const unTrack = useCallback(
+    async ({ id }: SearchResult) => {
+      await fetch(`/api/track/${id}`, { method: "delete" });
+      setTimeout(refresh, 1000);
+    },
+    [refresh],
+  );
 
   return (
     <>
       <TrackingContext.Provider
         value={{
-          result,
           track,
           unTrack,
         }}

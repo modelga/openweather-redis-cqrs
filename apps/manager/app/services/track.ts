@@ -1,30 +1,22 @@
 import { Client } from "../client";
-import { DetailedLocation, Location } from "../models";
+import { DetailedLocation } from "../models";
+import { Queue } from "../queue";
 import { Repository } from "../repository";
-import { slugify } from "../utils/slugify";
+import { getLocationId } from "../utils/getLocationId";
 
 export class TrackService {
-  constructor(private readonly deps: { repository: Repository; client: Client }) {}
+  constructor(private readonly deps: { repository: Repository; queue: Queue }) {}
 
-  async isTracked(slug: string): Promise<DetailedLocation & Location> {
-    const detailedLocation = await this.deps.repository.getTrackedLocation(slug);
-    if (!detailedLocation) {
-      return null;
-    }
-    return { ...detailedLocation, slug };
+  async isTracked(id: string): Promise<boolean> {
+    const detailedLocation = await this.deps.repository.getTrackedLocation(id);
+    return !!detailedLocation;
   }
 
-  async trackLocation(location: string): Promise<Location & DetailedLocation> {
-    const detailedLocation = await this.deps.client.getLocationDetails(location);
-    const slug = slugify(detailedLocation.name);
-    await this.deps.repository.addLocationToTrack(slug, detailedLocation);
-
-    return { ...detailedLocation, slug };
+  trackLocation(location: DetailedLocation): Promise<boolean> {
+    const id = getLocationId(location);
+    return this.deps.queue.publishTrackLocation({ id, ...location });
   }
-  async stopTracking(locationSlug: string): Promise<void> {
-    const count = await this.deps.repository.deleteLocationToTrack(locationSlug);
-    if (count === 0) {
-      throw new Error(`Key ${locationSlug} didn't exists!`);
-    }
+  stopTracking(id: string): Promise<boolean> {
+    return this.deps.queue.publishUntrackLocation(id);
   }
 }

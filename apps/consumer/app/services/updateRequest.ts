@@ -8,11 +8,11 @@ export class UpdateRequestService implements ListeningInterface {
   listen() {
     const { queue } = this.deps;
 
-    queue.listenToUpdateRequest((slug: string) => this.listenToUpdateRequest(slug));
+    return queue.listenToUpdateRequest((id: string) => this.listenToUpdateRequest(id));
   }
-  async listenToUpdateRequest(slug: string) {
+  async listenToUpdateRequest(locationId: string) {
     const { repository, queue, client } = this.deps;
-    const location = { ...(await repository.getTrackedLocation(slug)), slug };
+    const location = await repository.getTrackedLocation(locationId);
     const weather = await client.getCurrentWeather(location);
     await queue.publishWeatherData(weather);
   }

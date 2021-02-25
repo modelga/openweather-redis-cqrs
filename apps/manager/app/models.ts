@@ -10,14 +10,13 @@ export type Weather = {
 
 export type HistoryWeather = Weather & { timestamp: number };
 
-export type Location = {
-  name: string;
-  slug: string;
-};
-
 export type DetailedLocation = {
   name: string;
   lon: number;
   lat: number;
   country: string;
+  state?: string;
 };
+
+export type DetailedLocationWithId = DetailedLocation & { id: string };
+export type DetailedLocationWithTracking = DetailedLocationWithId & { isTracked: boolean };
