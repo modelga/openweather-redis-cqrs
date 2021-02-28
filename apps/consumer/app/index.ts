@@ -3,7 +3,7 @@ import { factory as clientFactory } from "./client";
 import { factory as queueFactory } from "./queue";
 import { factory as repositoryFactory } from "./repository";
 import { factory as publisherFactory } from "./publisher";
-import { CurrentWeatherService, HistoryWeatherService, UpdateRequestService } from "./services";
+import { CurrentWeatherService, HistoryWeatherService, UpdateRequestService, SchedulerService } from "./services";
 import { EventLog } from "./services/eventlog";
 import { TrackLocationService } from "./services/track";
 
@@ -18,6 +18,7 @@ function di(config: Config) {
     new TrackLocationService({ repository, queue, publisher }),
     new HistoryWeatherService({ queue, repository }),
     new CurrentWeatherService({ queue, repository }),
+    new SchedulerService({ queue, repository, publisher, config }),
   ];
 }
 

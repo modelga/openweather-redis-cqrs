@@ -39,11 +39,19 @@ export type RedisDB = DB & {
 type Queues = Queue | RedisQueue;
 type Publishers = Publisher | RedisPublisher;
 
+export type Scheduler = {
+  enabled: boolean;
+  interval: number;
+  tick: number;
+  updatesPerTick: number;
+};
+
 export type Config = {
   client: OpenWeatherClient;
   queue: Queues;
   publisher: Publishers;
   db: RedisDB;
+  scheduler: Scheduler;
 };
 
 const config: Config = {
@@ -63,6 +71,12 @@ const config: Config = {
   db: {
     type: DBTypes.Redis,
     host: "redis://db:6379",
+  },
+  scheduler: {
+    enabled: true,
+    interval: 60 * 1000,
+    tick: 5000,
+    updatesPerTick: 1,
   },
 };
 

@@ -2,7 +2,7 @@ import IoRedis from "ioredis";
 import { create } from "ts-node";
 
 import { Config } from "../../config";
-import { DetailedLocation, HistoryWeather, Weather } from "../models";
+import { DetailedLocation, HistoryWeather, SchedulerState, Weather } from "../models";
 import { Repository } from "./types";
 
 enum Prefix {
@@ -13,7 +13,7 @@ enum Prefix {
 }
 
 function createKey(type: Prefix, key: string): string {
-  if (key === null) {
+  if (key === null || key === undefined) {
     return type;
   }
   return `${type}_${key}`;
@@ -23,6 +23,21 @@ export class RedisRepository implements Repository {
   private db: IoRedis.Redis;
   constructor(config: Config) {
     this.db = new IoRedis(config.db.host);
+  }
+  async getAllTrackingLocations(): Promise<string[]> {
+    const locationKeys = await this.keys(Prefix.TRACKING);
+    return locationKeys.map((l) => l.replace(createKey(Prefix.TRACKING, ""), ""));
+  }
+  async getSchedulerState(): Promise<Record<string, SchedulerState>> {
+    return this.hgetall<Record<string, SchedulerState>>(Prefix.TRACKING);
+  }
+
+  updateSchedulerField(locationId: string, data: SchedulerState): Promise<boolean> {
+    return this.hset(Prefix.TRACKING, locationId, data).then((res) => res === 1);
+  }
+
+  removeSchedulerField(locationId: string): Promise<number> {
+    return this.hdel(Prefix.TRACKING, locationId);
   }
 
   async addLocationToTrack(locationId: string, detailedLocation: DetailedLocation): Promise<void> {
@@ -68,6 +83,25 @@ export class RedisRepository implements Repository {
 
   private async del(type: Prefix, key: string): Promise<number> {
     return await this.db.del(createKey(type, key));
+  }
+
+  private async keys(type: Prefix): Promise<string[]> {
+    return await this.db.keys(createKey(type, "*"));
+  }
+
+  private async hset(type: Prefix, key: string, data: any): Promise<0 | 1> {
+    return await this.db.hset(createKey(type, null), key, JSON.stringify(data));
+  }
+
+  private async hdel(type: Prefix, key: string): Promise<number> {
+    return await this.db.hdel(createKey(type, null), key);
+  }
+
+  private async hgetall<T>(type: Prefix): Promise<T> {
+    const data = await this.db.hgetall(type);
+    return Object.entries(data)
+      .map(([key, value]) => ({ [key]: JSON.parse(value as string) }))
+      .reduce((acc, el) => ({ ...acc, ...el }), {}) as T;
   }
 
   private async lindex<T>(type: Prefix, key: string, offset: number): Promise<T> {

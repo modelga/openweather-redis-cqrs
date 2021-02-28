@@ -17,3 +17,7 @@ export type DetailedLocation = {
   country: string;
   state: string;
 };
+
+export type SchedulerState = {
+  lastRun: number;
+};

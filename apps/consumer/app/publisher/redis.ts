@@ -25,8 +25,11 @@ export class RedisPublisher implements Publisher {
 
   private async publish(channel: Topic, message: string): Promise<void> {
     const consumers = await this.publisher.publish(channel, message);
+    const { length } = message;
     console.log(
-      `Message of ${message.length} bytes, has been published on channel ${channel} to ${consumers} consumers`,
+      `Message of ${length} bytes, has been published on channel ${channel} to ${consumers} consumers ${
+        length < 25 ? `value=${message}` : ""
+      }`,
     );
     return;
   }
