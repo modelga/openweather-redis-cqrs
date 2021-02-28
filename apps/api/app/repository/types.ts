@@ -1,4 +1,4 @@
-import { Weather, HistoryWeather, DetailedLocation, DetailedLocationWithId } from "../models";
+import { DetailedLocationWithId, HistoryWeather, Weather } from "../models";
 
 export enum DBTypes {
   Redis,

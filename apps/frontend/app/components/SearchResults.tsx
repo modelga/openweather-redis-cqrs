@@ -1,5 +1,5 @@
 import { Button, Grid } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 import { SearchContext, SearchResult } from "../contexts/SearchContext";
 import { TrackingContext } from "../contexts/TrackingContext";
@@ -11,10 +11,12 @@ const ResultComponent: React.FC<{ data: SearchResult }> = ({ data }) => {
   const { get, update } = useContext(WeatherContext);
   const [weather, setWeather] = useState<WeatherResult>({ current: null, history: [] });
 
+  const refresh = useCallback(async () => {
+    setWeather(await get(data));
+  }, [data, setWeather, get]);
+
   useEffect(() => {
-    (async () => {
-      setWeather(await get(data));
-    })();
+    refresh();
   }, [setWeather, data]);
 
   const trackAction = data.isTracked ? unTrack : track;
@@ -32,7 +34,7 @@ const ResultComponent: React.FC<{ data: SearchResult }> = ({ data }) => {
         </Grid>
         {data.isTracked ? (
           <Grid item xs={4}>
-            <Button color="secondary" variant="contained" onClick={() => refresh(data)}>
+            <Button color="secondary" variant="contained" onClick={refresh}>
               Refresh
             </Button>
             <Button color="secondary" variant="contained" onClick={() => update(data)}>

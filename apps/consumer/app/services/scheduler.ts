@@ -1,5 +1,5 @@
 import { Config } from "../../config";
-import { DetailedLocation, SchedulerState, Weather } from "../models";
+import { DetailedLocation, SchedulerState } from "../models";
 import { Publisher } from "../publisher";
 import { Queue } from "../queue";
 import { Repository } from "../repository";

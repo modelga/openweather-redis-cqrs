@@ -1,5 +1,4 @@
 import IoRedis from "ioredis";
-import { create } from "ts-node";
 
 import { Config } from "../../config";
 import { DetailedLocation, HistoryWeather, SchedulerState, Weather } from "../models";

@@ -1,4 +1,5 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext } from "react";
+
 import { SearchContext, SearchResult } from "./SearchContext";
 
 export type TrackingContextType = {

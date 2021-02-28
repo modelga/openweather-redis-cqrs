@@ -1,7 +1,7 @@
 import { Client } from "../client";
 import { DetailedLocationWithId, DetailedLocationWithTracking } from "../models";
-import { TrackService } from "./track";
 import { getLocationId } from "../utils/getLocationId";
+import { TrackService } from "./track";
 
 export class SearchService {
   constructor(private readonly deps: { client: Client; trackService: TrackService }) {}

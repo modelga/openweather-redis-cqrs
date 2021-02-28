@@ -1,5 +1,5 @@
 import { DetailedLocation } from "../models";
-import { Publisher, PublisherTypes } from "../publisher";
+import { Publisher } from "../publisher";
 import { Queue } from "../queue";
 import { Repository } from "../repository";
 import { ListeningInterface } from "./types";

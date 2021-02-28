@@ -1,4 +1,3 @@
-import { Client } from "../client";
 import { DetailedLocation } from "../models";
 import { Queue } from "../queue";
 import { Repository } from "../repository";

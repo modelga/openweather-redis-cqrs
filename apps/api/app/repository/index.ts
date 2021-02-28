@@ -1,6 +1,7 @@
 import { Config } from "../../config";
 import { RedisRepository } from "./redis";
-import { Repository, DBTypes } from "./types";
+import { DBTypes, Repository } from "./types";
+
 export * from "./types";
 
 export function factory(config: Config): Repository {

@@ -4,7 +4,6 @@ import React from "react";
 
 import { Search } from "./components/Search";
 import { SearchResults } from "./components/SearchResults";
-import { Weather } from "./components/weather/Weather";
 import { SearchContainer } from "./contexts/SearchContext";
 import { TrackingContainer } from "./contexts/TrackingContext";
 import { WeatherContainer } from "./contexts/WeatherContext";

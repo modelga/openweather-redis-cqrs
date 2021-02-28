@@ -1,4 +1,3 @@
-import { Client } from "../client";
 import { HistoryWeather, Weather } from "../models";
 import { Repository } from "../repository/types";
 

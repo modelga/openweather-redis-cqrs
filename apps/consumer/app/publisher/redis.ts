@@ -1,6 +1,5 @@
 import IoRedis from "ioredis";
 
-import { Config } from "../../config";
 import { Weather } from "../models";
 import { Topics as Topic } from "../topics";
 import { Publisher } from "./types";

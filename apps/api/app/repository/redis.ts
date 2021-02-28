@@ -1,7 +1,8 @@
-import { Repository } from "./types";
-import { Config } from "../../config";
 import IoRedis from "ioredis";
-import { Weather, HistoryWeather, DetailedLocation, DetailedLocationWithId } from "../models";
+
+import { Config } from "../../config";
+import { DetailedLocationWithId, HistoryWeather, Weather } from "../models";
+import { Repository } from "./types";
 
 enum Prefix {
   WEATHER_CURRENT = "weather_current",

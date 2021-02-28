@@ -1,6 +1,7 @@
 import { Config } from "../../config";
 import { RedisQueue } from "./redis";
-import { QueueTypes, Queue } from "./types";
+import { Queue, QueueTypes } from "./types";
+
 export * from "./types";
 
 export function factory(config: Config): Queue {

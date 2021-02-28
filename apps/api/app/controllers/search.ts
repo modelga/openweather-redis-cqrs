@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { SearchService } from "../services";
 import { asyncHandler, createResponse } from "../utils";
 

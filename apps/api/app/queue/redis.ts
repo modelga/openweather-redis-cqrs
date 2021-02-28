@@ -1,7 +1,8 @@
-import { Queue } from "./types";
-import { Config } from "../../config";
 import IoRedis from "ioredis";
+
+import { Config } from "../../config";
 import { DetailedLocationWithId } from "../models";
+import { Queue } from "./types";
 
 const UPDATE_REQUEST_CHANNEL = "UPDATE_REQUEST";
 const TRACK_LOCATION_CHANNEL = "TRACK_LOCATION";

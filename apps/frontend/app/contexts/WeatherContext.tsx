@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { SearchContext, SearchResult } from "./SearchContext";
-import { TrackingContext } from "./TrackingContext";
+
+import { SearchResult } from "./SearchContext";
 
 export type Weather = {
   name: string;

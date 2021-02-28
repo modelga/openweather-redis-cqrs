@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { asyncHandler, createResponse } from "../utils";
+
 import { TrackService } from "../services";
+import { asyncHandler, createResponse } from "../utils";
 import { createDeleteResponse } from "../utils/handlers";
 
 export function trackController(service: TrackService) {

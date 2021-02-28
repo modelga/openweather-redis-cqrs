@@ -1,4 +1,3 @@
-import { Weather } from "../models";
 import { Queue, RawMessage } from "../queue";
 import { Repository } from "../repository";
 import { ListeningInterface } from "./types";

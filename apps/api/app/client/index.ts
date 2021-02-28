@@ -1,6 +1,7 @@
 import { Config } from "../../config";
 import OpenWeather from "./openweather";
 import { Client, Clients } from "./types";
+
 export * from "./types";
 
 export function factory(config: Config): Client {

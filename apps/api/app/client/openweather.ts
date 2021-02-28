@@ -1,7 +1,8 @@
-import { Client } from "./types";
-import { Config } from "../../config";
 import axios, { AxiosInstance } from "axios";
+
+import { Config } from "../../config";
 import { DetailedLocation } from "../models";
+import { Client } from "./types";
 
 type Geo_1_0_DirectResponse = {
   name: string;
